@@ -1,57 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Barcode Generator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Barcode Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @media print {
+        body {
+          margin: 0;
+        }
+      }
+      .label {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        padding: 0;
+        overflow: hidden;
+      }
+      .text {
+        font-size: 6pt;
+        text-align: left;
+        line-height: 1.1;
+        padding: 0.5mm 1mm;
+        width: 100%;
+        max-height: 10mm;
+        overflow: hidden;
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        box-sizing: border-box;
+      }
+      .barcode img {
+        height: 14mm;
+        max-width: 90%;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div
+      class="bg-white shadow-md rounded-md p-8 w-full max-w-md"
+      id="form-container"
+    >
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">
+        📦 Barcode Generator
+      </h2>
 
-  <!-- ✅ Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+      <form id="barcodeForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">ASIN</label>
+          <input
+            type="text"
+            name="asin"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
 
-  <div class="bg-white shadow-md rounded-md p-8 w-full max-w-md">
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">📦 Barcode Generator</h2>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">SKU</label>
+          <input
+            type="text"
+            name="sku"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
 
-    <form method="post" action="barcode.php" target="_blank" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700"
+            >Item Name</label
+          >
+          <input
+            type="text"
+            name="itemname"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">ASIN</label>
-        <input type="text" name="asin" required
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-      </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700"
+            >Label Size</label
+          >
+          <select
+            name="label_size"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="50x25mm">50mm x 25mm</option>
+            <option value="76x127mm">3&quot; x 5&quot;</option>
+            <option value="101x152mm">4&quot; x 6&quot;</option>
+          </select>
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">SKU</label>
-        <input type="text" name="sku" required
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-      </div>
+        <div class="pt-4">
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
+          >
+            Print Label
+          </button>
+        </div>
+      </form>
+    </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Item Name</label>
-        <input type="text" name="itemname" required
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-      </div>
+    <div id="label-container" class="hidden"></div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Label Size</label>
-        <select name="label_size" required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-          <option value="50x25mm">50mm x 25mm</option>
-          <option value="76x127mm">3" x 5"</option>
-          <option value="101x152mm">4" x 6"</option>
-        </select>
-      </div>
+    <script>
+      const form = document.getElementById("barcodeForm");
+      const labelContainer = document.getElementById("label-container");
+      const formContainer = document.getElementById("form-container");
 
-      <div class="pt-4">
-        <button type="submit"
-                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">
-          Print Label
-        </button>
-      </div>
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
 
-    </form>
-  </div>
+        const asin = form.asin.value.trim();
+        const sku = form.sku.value.trim();
+        const itemname = form.itemname.value.trim();
+        const labelSize = form.label_size.value;
 
-</body>
+        // Parse label size
+        let [width, height] = labelSize
+          .replace(/mm/g, "")
+          .split("x")
+          .map(Number);
+        if (labelSize === "76x127mm") {
+          width = 76.2;
+          height = 127;
+        } else if (labelSize === "101x152mm") {
+          width = 101.6;
+          height = 152.4;
+        }
+
+        const labelHTML = `
+        <style>
+          @page { size: ${width}mm ${height}mm; margin: 0; }
+        </style>
+        <div class="label" style="width: ${width}mm; height: ${height}mm;">
+          <div class="text">
+            <div><strong>SKU:</strong> ${sku}</div>
+            <div>${itemname}</div>
+          </div>
+          <div class="barcode">
+            <img src="https://barcode.tec-it.com/barcode.ashx?data=${encodeURIComponent(
+              asin
+            )}&code=Code128&dpi=300" alt="barcode">
+          </div>
+        </div>
+      `;
+
+        formContainer.classList.add("hidden");
+        labelContainer.classList.remove("hidden");
+        labelContainer.innerHTML = labelHTML;
+
+        window.print();
+
+        // Reset after printing
+        setTimeout(() => {
+          formContainer.classList.remove("hidden");
+          labelContainer.classList.add("hidden");
+        }, 1000);
+      });
+    </script>
+  </body>
 </html>
