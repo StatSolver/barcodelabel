@@ -35,7 +35,7 @@
       }
       .barcode img {
         height: 14mm;
-         max-width: 80%;
+         max-width: 100%;
       }
     </style>
   </head>
@@ -144,7 +144,7 @@
             <div><strong>SKU:</strong> ${sku}</div>
             <div>${itemname}</div>
           </div>
-          <div class="barcode" style="align-items: center;">
+          <div class="barcode flex justify-center items-center">
             <img src="https://barcode.tec-it.com/barcode.ashx?data=${encodeURIComponent(
               asin
             )}&code=Code128&dpi=300" alt="barcode">
