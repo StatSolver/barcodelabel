@@ -19,6 +19,8 @@
         box-sizing: border-box;
         padding: 0;
         overflow: hidden;
+        margin: 0;
+        padding: 0;
       }
       .text {
         font-size: 6pt;
@@ -35,7 +37,7 @@
       }
       .barcode img {
         height: 14mm;
-         max-width: 80%;
+        max-width: 80%;
       }
     </style>
   </head>
@@ -137,14 +139,14 @@
 
         const labelHTML = `
         <style>
-          @page { size: ${width}mm ${height}mm; margin: 0; }
+          @page { size: ${width}mm ${height}mm; margin: 2mm; }
         </style>
         <div class="label" style="width: ${width}mm; height: ${height}mm;">
           <div class="text">
             <div><strong>SKU:</strong> ${sku}</div>
             <div>${itemname}</div>
           </div>
-          <div class="barcode flex justify-center items-center">
+          <div class="barcode" style="align-items: center;">
             <img src="https://barcode.tec-it.com/barcode.ashx?data=${encodeURIComponent(
               asin
             )}&code=Code128&dpi=300" alt="barcode">
